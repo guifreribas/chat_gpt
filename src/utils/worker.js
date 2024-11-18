@@ -3,7 +3,6 @@ import { WebWorkerMLCEngineHandler } from "https://cdn.jsdelivr.net/npm/@mlc-ai/
 const handler = new WebWorkerMLCEngineHandler();
 
 self.onmessage = (msg) => {
-	console.log("Message received in main thread:", msg);
 	handler.onmessage(msg);
 };
 

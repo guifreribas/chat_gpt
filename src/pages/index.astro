@@ -3,48 +3,31 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title='Free Chat GPT'>
-	<main class='w-[800px] mx-auto max-w-full h-full max-h-[calc(100%-140px)] flex flex-col gap-4 rounded-md mb-8'>
+	<main class='w-[800px] mx-auto max-w-full h-full max-h-[calc(100%-140px)] flex flex-col gap-4 rounded-md mb-8 px-2'>
 		<h1 class='text-white text-center text-2xl font-bold'>
 			Bienvenido/a a <span class='text-gradient'>Free Chat GPT</span>
 		</h1>
 
-		<ul class="w-full h-full flex flex-col justify-start items-start overflow-y-auto bg-gray-100 rounded-md p-4 shadow-sm shadow-white">
+		<ul class="w-full h-full flex flex-col justify-start items-start overflow-y-auto bg-gray-300 rounded-md p-4 shadow-sm shadow-white">
 			<li class="loading">
 				<i></i>
 				<h4>Cargando...</h4>
 				<h5>Esto puede tardar un poco... Ten paciencia</h5>
 			</li>
-			<!-- <li class='w-full flex flex-col gap-2 bg-gray-100 rounded-md p-4'>
-				<span class="flex justify-center items-center text-lg font-bold rounded-full bg-blue-400 self-start w-12 h-12">GPT</span>
-				<p class="flex justify-center items-center self-start bg-blue-400 rounded-md py-1.5 px-5">Hola! ¿En qué puedo ayudarte hoy?</p>
-			</li>
-			<li class='w-full flex flex-col gap-2 bg-gray-100 rounded-md p-4'>
-				<span class="flex justify-center items-center text-lg font-bold rounded-full bg-green-400 self-end w-12 h-12">Tú</span>
-				<p class="flex justify-center items-center self-end bg-green-400 rounded-md py-1.5 px-5">Dime algo Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi, optio. Officiis blanditiis facere laboriosam reiciendis nesciunt nostrum quo quidem reprehenderit consequatur! Nisi neque maxime praesentium, necessitatibus provident dolores. Error, laboriosam!</p>
-			</li>
-			<li class='w-full flex flex-col gap-2 bg-gray-100 rounded-md p-4'>
-				<span class="flex justify-center items-center text-lg font-bold rounded-full bg-blue-400 self-start w-12 h-12">GPT</span>
-				<p class="flex justify-center items-center self-start bg-blue-400 rounded-md py-1.5 px-5">Dime algo Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi, optio. Officiis blanditiis facere laboriosam reiciendis nesciunt nostrum quo quidem reprehenderit consequatur! Nisi neque maxime praesentium, necessitatibus provident dolores. Error, laboriosam!</p>
-			</li>
-			<li class='w-full flex flex-col gap-2 bg-gray-100 rounded-md p-4'>
-				<span class="flex justify-center items-center text-lg font-bold rounded-full bg-blue-400 self-start w-12 h-12">GPT</span>
-				<p class="flex justify-center items-center self-start bg-blue-400 rounded-md py-1.5 px-5">Dime algo Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi, optio. Officiis blanditiis facere laboriosam reiciendis nesciunt nostrum quo quidem reprehenderit consequatur! Nisi neque maxime praesentium, necessitatibus provident dolores. Error, laboriosam!</p>
-			</li> -->
-
 		</ul>
 	</main>
 
 	<form
-		class='w-[800px] mx-auto max-w-full h-fit flex flex-row gap-4 rounded-md '
+		class='w-[800px] mx-auto max-w-full h-fit flex flex-row gap-4 rounded-md px-2'
 	>
 		<input placeholder='Escribe tu mensaje aquí...' class="w-full rounded-md p-2 text-black bg-gray-100 focus:outline-none px-4 shadow-sm shadow-white" />
-		<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm shadow-white hover:bg-blue-500 hover:shadow-none">Enviar</button>
+		<button type="submit" disabled class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm shadow-white hover:bg-blue-500 hover:shadow-none">Enviar</button>
 	</form>
 
 	<small>&nbsp;</small>
 
 	<template id='message-template'>
-		<li class='w-full flex flex-col gap-2 bg-gray-100 rounded-md p-4'>
+		<li class='w-full flex flex-col gap-2 rounded-md p-4'>
 			<span class="flex justify-center items-center text-lg font-bold rounded-full w-12 h-12"></span>
 			<p class="flex justify-center items-center rounded-md py-1.5 px-5"></p>
 		</li>
@@ -56,7 +39,8 @@ import Layout from "../layouts/Layout.astro";
 
 
 <script is:inline type="module">
-		import { CreateWebWorkerMLCEngine } from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
+	import { CreateWebWorkerMLCEngine } from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
+
 	(async() => {
 		try {
 			const gptClass = ['bg-blue-400', 'self-start'];
@@ -74,13 +58,10 @@ import Layout from "../layouts/Layout.astro";
 			const $i = $('i');
 			const $loading = $('.loading');
 
-
 			let messages = [];
 			let end = false;
 
 			const SELECTED_MODEL = 'Llama-3-8B-Instruct-q4f32_1-MLC-1k';
-
-
 
 			const engine = await CreateWebWorkerMLCEngine(
 			  new Worker("src/utils/worker.js", { type: 'module' }),
@@ -100,10 +81,9 @@ import Layout from "../layouts/Layout.astro";
 			  }
 			)
 
-
 			$form.addEventListener('submit', async (e) => {
 				e.preventDefault();
-				console.log('submit');
+				og('submit');
 				const messageText = $input.value;
 
 				if(messageText.length === 0) return;
@@ -138,7 +118,7 @@ import Layout from "../layouts/Layout.astro";
 
 				$sendButton.removeAttribute('disabled');
 
-				messages.puch({
+				messages.push({
 					role: 'assistant',
 					content: reply
 				});
@@ -172,7 +152,6 @@ import Layout from "../layouts/Layout.astro";
 		} catch (error) {
 			console.error(error);
 		}
-
 })();
 
 </script>
