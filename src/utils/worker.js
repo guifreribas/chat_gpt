@@ -6,10 +6,3 @@ const handler = new WebWorkerMLCEngineHandler();
 self.onmessage = (msg) => {
   handler.onmessage(msg);
 };
-
-self.onerror = (e) => console.error("Worker error:", e.message);
-
-self.onmessage = (msg) => {
-  console.log("Message received in worker:", msg);
-  handler.onmessage(msg);
-};
