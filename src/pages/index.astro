@@ -4,15 +4,21 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title='Free Chat GPT'>
 	<main class='w-[800px] mx-auto max-w-full h-full max-h-[calc(100%-140px)] flex flex-col gap-4 rounded-md mb-8 px-2'>
+		<header>
+
 		<h1 class='text-white text-center text-2xl font-bold'>
-			Bienvenido/a a <span class='text-gradient'>Free Chat GPT</span>
+			CHAT GPT
 		</h1>
+		<p class="text-gray-300 text-center text-sm">
+			Gratis, privado y se ejecuta en tu navegador!
+		</p>
+		</header>
 
 		<ul class="w-full h-full flex flex-col justify-start items-start overflow-y-auto bg-gray-300 rounded-md p-4 shadow-sm shadow-white">
-			<li class="loading">
-				<i></i>
-				<h4>Cargando...</h4>
-				<h5>Esto puede tardar un poco... Ten paciencia</h5>
+			<li class="loading w-full h-full flex flex-col justify-center items-center">
+				<i class="w-full mx-auto text-sm text-gray-600 rounded-md p-2 text-center"></i>
+				<h4 class="text-md font-bold">Estoy cargando el modelo...</h4>
+				<h5 class="text-gray-700 font-medium text-sm">Esto puede tardar un poco...</h5>
 			</li>
 		</ul>
 	</main>
@@ -21,7 +27,17 @@ import Layout from "../layouts/Layout.astro";
 		class='w-[800px] mx-auto max-w-full h-fit flex flex-row gap-4 rounded-md px-2'
 	>
 		<input placeholder='Escribe tu mensaje aquí...' class="w-full rounded-md p-2 text-black bg-gray-100 focus:outline-none px-4 shadow-sm shadow-white" />
-		<button type="submit" disabled class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm shadow-white hover:bg-blue-500 hover:shadow-none">Enviar</button>
+		<button
+			type="submit"
+			class=`px-4 py-2 text-white rounded-md bg-blue-600 font-bold shadow-sm shadow-blue-400/80 cursor-pointer
+			hover:bg-blue-800 hover:shadow-none
+			disabled:bg-gray-600 disabled:cursor-not-allowed disabled:shadow-none disabled:text-gray-900/50 disabled:font-medium
+			transition-all duration-200
+			`
+			disabled
+		>
+			Enviar
+		</button>
 	</form>
 
 	<small>&nbsp;</small>
@@ -38,38 +54,42 @@ import Layout from "../layouts/Layout.astro";
 
 
 
-<script is:inline type="module">
-	import { CreateWebWorkerMLCEngine } from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
+<script>
+	// import { CreateWebWorkerMLCEngine } from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
+	import { CreateWebWorkerMLCEngine } from "@mlc-ai/web-llm";
 
 	(async() => {
 		try {
 			const gptClass = ['bg-blue-400', 'self-start'];
 			const userClass = [ 'bg-green-400', 'self-end'];
 
-			const $ = (element) => document.querySelector(element);
+			const $ = (element: string) => document.querySelector(element);
 
-			const $messageTemplate = $('#message-template');
-			const $messages = $('ul');
-			const $input = $('input');
-			const $form = $('form');
-			const $sendButton = $('button');
-			const $container = $('main');
-			const $info = $('small');
-			const $i = $('i');
-			const $loading = $('.loading');
+			const $messageTemplate = $('#message-template') as HTMLTemplateElement;
+			const $messages = $('ul') as HTMLUListElement;
+			const $input = $('input') as HTMLInputElement;
+			const $form = $('form') as HTMLFormElement;
+			const $sendButton = $('button') as HTMLButtonElement;
+			const $container = $('main') as HTMLElement;
+			const $info = $('small') as HTMLElement;
+			const $i = $('i') as HTMLElement;
+			const $loading = $('.loading') as HTMLElement;
+
 
 			let messages = [];
 			let end = false;
 
-			const SELECTED_MODEL = 'Llama-3-8B-Instruct-q4f32_1-MLC-1k';
+			const SELECTED_MODEL = 'Llama-3.2-1B-Instruct-q4f32_1-MLC';
 
 			const engine = await CreateWebWorkerMLCEngine(
 			  new Worker("src/utils/worker.js", { type: 'module' }),
+			//   new Worker("src/utils/worker.js", { type: 'module' }),
 			  SELECTED_MODEL,
 			  {
 			    initProgressCallback: (info) => {
 					$info.textContent = info.text;
 					$i.textContent = info.text;
+					console.log(info)
 					if (info.progress === 1 && !end) {
 						end = true
 						$loading?.parentNode?.removeChild($loading)
@@ -83,7 +103,6 @@ import Layout from "../layouts/Layout.astro";
 
 			$form.addEventListener('submit', async (e) => {
 				e.preventDefault();
-				og('submit');
 				const messageText = $input.value;
 
 				if(messageText.length === 0) return;
@@ -128,12 +147,12 @@ import Layout from "../layouts/Layout.astro";
 			});
 
 
-			function addMessage(text, sender) {
-				const clonedTemplate = $messageTemplate.content.cloneNode(true);
+			function addMessage(text: string, sender: string) {
+				const clonedTemplate = $messageTemplate.content.cloneNode(true) as HTMLTemplateElement;
 				const $newMessage = clonedTemplate.querySelector('li');
 
-				const $who = $newMessage.querySelector('span');
-				const $text = $newMessage.querySelector('p');
+				const $who = $newMessage?.querySelector('span') as HTMLSpanElement;
+				const $text = $newMessage?.querySelector('p') as HTMLParagraphElement;
 
 				const isBotSender = sender === 'bot';
 				const classList =  isBotSender ? [...gptClass] : [...userClass];
@@ -143,7 +162,7 @@ import Layout from "../layouts/Layout.astro";
 				$text.textContent = text;
 				$text.classList.add(...classList);
 
-				$messages.appendChild($newMessage);
+				$messages.appendChild($newMessage as Node);
 				$messages.scrollTop = $messages.scrollHeight;
 
 				return $text;
