@@ -76,14 +76,13 @@ import Layout from "../layouts/Layout.astro";
 			const $loading = $('.loading') as HTMLElement;
 
 
-			let messages = [];
+			let messages: any[] = [];
 			let end = false;
 
 			const SELECTED_MODEL = 'Llama-3.2-1B-Instruct-q4f32_1-MLC';
 
 			const engine = await CreateWebWorkerMLCEngine(
 			  new Worker("src/utils/worker.js", { type: 'module' }),
-			//   new Worker("src/utils/worker.js", { type: 'module' }),
 			  SELECTED_MODEL,
 			  {
 			    initProgressCallback: (info) => {
@@ -133,6 +132,7 @@ import Layout from "../layouts/Layout.astro";
 					const content = choice?.delta?.content ?? "";
 					reply += content;
 					$botMessage.innerHTML += content;
+					$messages.scrollTop = $messages.scrollHeight;
 				}
 
 				$sendButton.removeAttribute('disabled');
@@ -142,7 +142,6 @@ import Layout from "../layouts/Layout.astro";
 					content: reply
 				});
 
-				$container.scrollTop = $container.scrollHeight;
 
 			});
 
