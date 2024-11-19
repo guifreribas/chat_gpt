@@ -82,7 +82,8 @@ import Layout from "../layouts/Layout.astro";
 			const SELECTED_MODEL = 'Llama-3.2-1B-Instruct-q4f32_1-MLC';
 
 			const engine = await CreateWebWorkerMLCEngine(
-			  new Worker("src/utils/worker.js", { type: 'module' }),
+			  new Worker(new URL("src/utils/worker.js", import.meta.url), { type: 'module' }),
+			//   new Worker("src/utils/worker.js", { type: 'module' }),
 			  SELECTED_MODEL,
 			  {
 			    initProgressCallback: (info) => {
