@@ -82,8 +82,9 @@ import Layout from "../layouts/Layout.astro";
 
 			console.log(import.meta.url)
 
+			const workerUrl = new URL('../utils/worker.js', import.meta.url);
 			const engine = await CreateWebWorkerMLCEngine(
-			  new Worker("src/utils/worker.js", { type: 'module' }),
+			  new Worker(workerUrl, { type: 'module' }),
 			  SELECTED_MODEL,
 			  {
 			    initProgressCallback: (info) => {
